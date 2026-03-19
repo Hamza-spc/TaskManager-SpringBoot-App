@@ -5,6 +5,8 @@ import com.hamza.taskmanager.dto.task.TaskResponse;
 import com.hamza.taskmanager.dto.task.TaskUpdateRequest;
 import com.hamza.taskmanager.entity.Task;
 import com.hamza.taskmanager.entity.User;
+import com.hamza.taskmanager.enums.TaskPriority;
+import com.hamza.taskmanager.enums.TaskStatus;
 import com.hamza.taskmanager.repository.TaskRepository;
 import com.hamza.taskmanager.repository.UserRepository;
 import com.hamza.taskmanager.service.TaskService;
@@ -31,8 +33,8 @@ public class TaskServiceImpl implements TaskService {
         Task task = Task.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
-                .status(request.getStatus() != null ? request.getStatus() : null)
-                .priority(request.getPriority() != null ? request.getPriority() : null)
+                .status(request.getStatus() != null ? request.getStatus() : TaskStatus.TODO)
+                .priority(request.getPriority() != null ? request.getPriority() : TaskPriority.MEDIUM)
                 .dueDate(request.getDueDate())
                 .user(user)
                 .build();
@@ -71,8 +73,12 @@ public class TaskServiceImpl implements TaskService {
 
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
-        task.setStatus(request.getStatus());
-        task.setPriority(request.getPriority());
+        if (request.getStatus() != null) {
+            task.setStatus(request.getStatus());
+        }
+        if (request.getPriority() != null) {
+            task.setPriority(request.getPriority());
+        }
         task.setDueDate(request.getDueDate());
 
         Task updatedTask = taskRepository.save(task);
