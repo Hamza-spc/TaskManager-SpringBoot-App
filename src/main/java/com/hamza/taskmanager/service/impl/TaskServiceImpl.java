@@ -7,6 +7,8 @@ import com.hamza.taskmanager.entity.Task;
 import com.hamza.taskmanager.entity.User;
 import com.hamza.taskmanager.enums.TaskPriority;
 import com.hamza.taskmanager.enums.TaskStatus;
+import com.hamza.taskmanager.exception.TaskNotFoundException;
+import com.hamza.taskmanager.exception.UserNotFoundException;
 import com.hamza.taskmanager.repository.TaskRepository;
 import com.hamza.taskmanager.repository.UserRepository;
 import com.hamza.taskmanager.service.TaskService;
@@ -28,7 +30,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponse createTask(TaskCreateRequest request) {
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id " + request.getUserId()));
 
         Task task = Task.builder()
                 .title(request.getTitle())
@@ -54,7 +56,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponse getTaskById(Long id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new TaskNotFoundException("Task not found with id " + id));
         return mapToResponse(task);
     }
 
@@ -69,7 +71,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponse updateTask(Long id, TaskUpdateRequest request) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new TaskNotFoundException("Task not found with id " + id));
 
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
@@ -88,7 +90,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void deleteTask(Long id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new TaskNotFoundException("Task not found with id " + id));
 
         taskRepository.delete(task);
     }
