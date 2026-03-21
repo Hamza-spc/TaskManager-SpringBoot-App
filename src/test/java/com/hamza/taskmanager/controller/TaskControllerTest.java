@@ -141,4 +141,73 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$[0].description").value("Project Based Learning"))
                 .andExpect(jsonPath("$[0].userId").value(savedUser.getId()));
     }
+
+    @Test
+    void shouldReturnTaskById() throws Exception{
+        User savedUser = userRepository.save(
+                User.builder()
+                        .name("Hamza")
+                        .email("hamza@example.com")
+                        .password("secret")
+                        .role(UserRole.USER)
+                        .build()
+        );
+
+        Task savedTask = taskRepository.save(
+                Task.builder()
+                        .title("Learn Spring Boot")
+                        .description("Project Based Learning")
+                        .status(TaskStatus.IN_PROGRESS)
+                        .priority(TaskPriority.HIGH)
+                        .dueDate(LocalDate.now().plusDays(3))
+                        .user(savedUser)
+                        .build()
+        );
+
+        mockMvc.perform(get("/api/tasks/"+savedTask.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(savedTask.getId()))
+                .andExpect(jsonPath("$.title").value("Learn Spring Boot"))
+                .andExpect(jsonPath("$.description").value("Project Based Learning"))
+                .andExpect(jsonPath("$.userId").value(savedUser.getId()));
+
+    }
+
+    @Test
+    void shouldReturnTasksByUserId() throws Exception{
+        User savedUser = userRepository.save(
+                User.builder()
+                        .name("Hamza")
+                        .email("hamza@example.com")
+                        .password("secret")
+                        .role(UserRole.USER)
+                        .build()
+        );
+
+        Task savedTask = taskRepository.save(
+                Task.builder()
+                        .title("Learn Spring Boot")
+                        .description("Project Based Learning")
+                        .status(TaskStatus.IN_PROGRESS)
+                        .priority(TaskPriority.HIGH)
+                        .dueDate(LocalDate.now().plusDays(3))
+                        .user(savedUser)
+                        .build()
+        );
+
+        Task savedTask2 = taskRepository.save(
+                Task.builder()
+                        .title("Master Spring Boot CRUD")
+                        .description("Project Based Learning 2")
+                        .status(TaskStatus.IN_PROGRESS)
+                        .priority(TaskPriority.HIGH)
+                        .dueDate(LocalDate.now().plusDays(7))
+                        .user(savedUser)
+                        .build()
+        );
+
+        mockMvc.perform(get("/api/tasks/user/" + savedUser.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(2));
+    }
 }
