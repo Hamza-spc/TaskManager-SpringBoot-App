@@ -2,6 +2,7 @@ package com.hamza.taskmanager.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hamza.taskmanager.dto.task.TaskCreateRequest;
+import com.hamza.taskmanager.dto.task.TaskUpdateRequest;
 import com.hamza.taskmanager.entity.Task;
 import com.hamza.taskmanager.entity.User;
 import com.hamza.taskmanager.enums.TaskPriority;
@@ -19,8 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -221,5 +221,43 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$[0].title").value("Learn Spring Boot 1"))
                 .andExpect(jsonPath("$[0].description").value("Project Based Learning 1"))
                 .andExpect(jsonPath("$[0].userId").value(savedUser1.getId()));
+    }
+
+    @Test
+    void shouldUpdateTaskSuccessfully() throws Exception{
+        User savedUser1 = userRepository.save(
+                User.builder()
+                        .name("Hamza1")
+                        .email("hamza1@example.com")
+                        .password("secret1")
+                        .role(UserRole.USER)
+                        .build()
+        );
+
+        Task savedTask1 = taskRepository.save(
+                Task.builder()
+                        .title("Learn Spring Boot")
+                        .description("Project Based Learning")
+                        .status(TaskStatus.IN_PROGRESS)
+                        .priority(TaskPriority.HIGH)
+                        .dueDate(LocalDate.now().plusDays(3))
+                        .user(savedUser1)
+                        .build()
+        );
+
+        TaskUpdateRequest request = new TaskUpdateRequest();
+        request.setTitle("Master Spring Boot");
+        request.setDescription("Practicing MockMvc testing");
+        request.setStatus(TaskStatus.IN_PROGRESS);
+        request.setPriority(TaskPriority.HIGH);
+        request.setDueDate(LocalDate.now().plusDays(7));
+
+        mockMvc.perform(put("/api/tasks/" + savedTask1.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Master Spring Boot"))
+                .andExpect(jsonPath("$.description").value("Practicing MockMvc testing"))
+                .andExpect(jsonPath("$.userId").value(savedUser1.getId()));
     }
 }
