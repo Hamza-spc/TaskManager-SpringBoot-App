@@ -2,6 +2,7 @@ package com.hamza.taskmanager.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hamza.taskmanager.dto.task.TaskCreateRequest;
+import com.hamza.taskmanager.entity.Task;
 import com.hamza.taskmanager.entity.User;
 import com.hamza.taskmanager.enums.TaskPriority;
 import com.hamza.taskmanager.enums.TaskStatus;
@@ -112,5 +113,35 @@ public class TaskControllerTest {
     }
 
     @Test
-    void shouldReturnAllTasks
+    void shouldReturnAllTasks() throws Exception{
+        User savedUser = userRepository.save(
+                User.builder()
+                        .name("Hamza")
+                        .email("hamza@example.com")
+                        .password("secret")
+                        .role(UserRole.USER)
+                        .build()
+        );
+
+        Task savedTask = taskRepository.save(
+                Task.builder()
+                        .title("Learn Spring Boot")
+                        .description("Project Based Learning")
+                        .status(TaskStatus.IN_PROGRESS)
+                        .priority(TaskPriority.HIGH)
+                        .dueDate(LocalDate.now().plusDays(3))
+                        .user(savedUser)
+                        .build()
+        );
+
+        mockMvc.perform(get("/api/tasks"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].title").value("Learn Spring Boot"))
+                .andExpect(jsonPath("$[0].description").value("Project Based Learning"))
+                .andExpect(jsonPath("$[0].userId").value(savedUser.getId()));
+
+
+
+    }
 }
