@@ -175,39 +175,51 @@ public class TaskControllerTest {
 
     @Test
     void shouldReturnTasksByUserId() throws Exception{
-        User savedUser = userRepository.save(
+        User savedUser1 = userRepository.save(
                 User.builder()
-                        .name("Hamza")
-                        .email("hamza@example.com")
-                        .password("secret")
+                        .name("Hamza1")
+                        .email("hamza1@example.com")
+                        .password("secret1")
                         .role(UserRole.USER)
                         .build()
         );
 
-        Task savedTask = taskRepository.save(
-                Task.builder()
-                        .title("Learn Spring Boot")
-                        .description("Project Based Learning")
-                        .status(TaskStatus.IN_PROGRESS)
-                        .priority(TaskPriority.HIGH)
-                        .dueDate(LocalDate.now().plusDays(3))
-                        .user(savedUser)
+        User savedUser2 = userRepository.save(
+                User.builder()
+                        .name("Hamza2")
+                        .email("hamza2@example.com")
+                        .password("secret2")
+                        .role(UserRole.USER)
                         .build()
         );
 
-        Task savedTask2 = taskRepository.save(
+        taskRepository.save(
+                Task.builder()
+                        .title("Learn Spring Boot 1")
+                        .description("Project Based Learning 1")
+                        .status(TaskStatus.IN_PROGRESS)
+                        .priority(TaskPriority.HIGH)
+                        .dueDate(LocalDate.now().plusDays(3))
+                        .user(savedUser1)
+                        .build()
+        );
+
+        taskRepository.save(
                 Task.builder()
                         .title("Master Spring Boot CRUD")
                         .description("Project Based Learning 2")
                         .status(TaskStatus.IN_PROGRESS)
                         .priority(TaskPriority.HIGH)
                         .dueDate(LocalDate.now().plusDays(7))
-                        .user(savedUser)
+                        .user(savedUser2)
                         .build()
         );
 
-        mockMvc.perform(get("/api/tasks/user/" + savedUser.getId()))
+        mockMvc.perform(get("/api/tasks/user/" + savedUser1.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2));
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].title").value("Learn Spring Boot 1"))
+                .andExpect(jsonPath("$[0].description").value("Project Based Learning 1"))
+                .andExpect(jsonPath("$[0].userId").value(savedUser1.getId()));
     }
 }
