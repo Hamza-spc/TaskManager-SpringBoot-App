@@ -288,4 +288,22 @@ public class TaskControllerTest {
                 .andExpect(status().isOk());
         assertFalse(taskRepository.findById(savedTask1.getId()).isPresent());
     }
+
+    @Test
+    void shouldReturnNotFoundWhenUpdatingNonExistingTask() throws Exception {
+
+        TaskUpdateRequest request = new TaskUpdateRequest();
+        request.setTitle("Master Spring Boot");
+        request.setDescription("Practicing MockMvc testing");
+        request.setStatus(TaskStatus.IN_PROGRESS);
+        request.setPriority(TaskPriority.HIGH);
+        request.setDueDate(LocalDate.now().plusDays(7));
+
+        mockMvc.perform(put("/api/tasks/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Task not found with id 999"));
+    }
 }
