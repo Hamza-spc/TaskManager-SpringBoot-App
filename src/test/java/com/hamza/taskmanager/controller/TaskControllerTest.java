@@ -73,15 +73,7 @@ public class TaskControllerTest {
 
     @Test //happy-path test 200
     void shouldCreateTaskSuccessfully() throws Exception{
-
-        User savedUser = userRepository.save(
-                User.builder()
-                        .name("Hamza")
-                        .email("hamza@example.com")
-                        .password("secret")
-                        .role(UserRole.USER)
-                        .build()
-        );
+        User savedUser = createUser("Hamza", "hamza@example.com", "secret");
 
         TaskCreateRequest request = new TaskCreateRequest();
         request.setTitle("Learn Spring Boot");
@@ -103,14 +95,7 @@ public class TaskControllerTest {
 
     @Test //validation failure test 400
     void shouldReturnBadRequestWhenTitleIsBlank() throws Exception {
-        User savedUser = userRepository.save(
-                User.builder()
-                        .name("Hamza")
-                        .email("hamza@example.com")
-                        .password("secret")
-                        .role(UserRole.USER)
-                        .build()
-        );
+        User savedUser = createUser("Hamza", "hamza@example.com", "secret");
 
         TaskCreateRequest request = new TaskCreateRequest();
         request.setTitle(" ");
@@ -139,25 +124,8 @@ public class TaskControllerTest {
 
     @Test
     void shouldReturnAllTasks() throws Exception{
-        User savedUser = userRepository.save(
-                User.builder()
-                        .name("Hamza")
-                        .email("hamza@example.com")
-                        .password("secret")
-                        .role(UserRole.USER)
-                        .build()
-        );
-
-        taskRepository.save(
-                Task.builder()
-                        .title("Learn Spring Boot")
-                        .description("Project Based Learning")
-                        .status(TaskStatus.IN_PROGRESS)
-                        .priority(TaskPriority.HIGH)
-                        .dueDate(LocalDate.now().plusDays(3))
-                        .user(savedUser)
-                        .build()
-        );
+        User savedUser = createUser("Hamza", "hamza@example.com", "secret");
+        createTask(savedUser, "Learn Spring Boot", "Project Based Learning");
 
         mockMvc.perform(get("/api/tasks"))
                 .andExpect(status().isOk())
@@ -169,25 +137,8 @@ public class TaskControllerTest {
 
     @Test
     void shouldReturnTaskById() throws Exception{
-        User savedUser = userRepository.save(
-                User.builder()
-                        .name("Hamza")
-                        .email("hamza@example.com")
-                        .password("secret")
-                        .role(UserRole.USER)
-                        .build()
-        );
-
-        Task savedTask = taskRepository.save(
-                Task.builder()
-                        .title("Learn Spring Boot")
-                        .description("Project Based Learning")
-                        .status(TaskStatus.IN_PROGRESS)
-                        .priority(TaskPriority.HIGH)
-                        .dueDate(LocalDate.now().plusDays(3))
-                        .user(savedUser)
-                        .build()
-        );
+        User savedUser = createUser("Hamza", "hamza@example.com", "secret");
+        Task savedTask = createTask(savedUser, "Learn Spring Boot", "Project Based Learning");
 
         mockMvc.perform(get("/api/tasks/"+savedTask.getId()))
                 .andExpect(status().isOk())
@@ -200,45 +151,10 @@ public class TaskControllerTest {
 
     @Test
     void shouldReturnTasksByUserId() throws Exception{
-        User savedUser1 = userRepository.save(
-                User.builder()
-                        .name("Hamza1")
-                        .email("hamza1@example.com")
-                        .password("secret1")
-                        .role(UserRole.USER)
-                        .build()
-        );
-
-        User savedUser2 = userRepository.save(
-                User.builder()
-                        .name("Hamza2")
-                        .email("hamza2@example.com")
-                        .password("secret2")
-                        .role(UserRole.USER)
-                        .build()
-        );
-
-        taskRepository.save(
-                Task.builder()
-                        .title("Learn Spring Boot 1")
-                        .description("Project Based Learning 1")
-                        .status(TaskStatus.IN_PROGRESS)
-                        .priority(TaskPriority.HIGH)
-                        .dueDate(LocalDate.now().plusDays(3))
-                        .user(savedUser1)
-                        .build()
-        );
-
-        taskRepository.save(
-                Task.builder()
-                        .title("Master Spring Boot CRUD")
-                        .description("Project Based Learning 2")
-                        .status(TaskStatus.IN_PROGRESS)
-                        .priority(TaskPriority.HIGH)
-                        .dueDate(LocalDate.now().plusDays(7))
-                        .user(savedUser2)
-                        .build()
-        );
+        User savedUser1 = createUser("Hamza1", "hamza1@example.com", "secret1");
+        User savedUser2 = createUser("Hamza2", "hamza2@example.com", "secret2");
+        createTask(savedUser1, "Learn Spring Boot 1", "Project Based Learning 1");
+        createTask(savedUser2, "Master Spring Boot CRUD", "Project Based Learning 2");
 
         mockMvc.perform(get("/api/tasks/user/" + savedUser1.getId()))
                 .andExpect(status().isOk())
@@ -250,25 +166,8 @@ public class TaskControllerTest {
 
     @Test
     void shouldUpdateTaskSuccessfully() throws Exception{
-        User savedUser1 = userRepository.save(
-                User.builder()
-                        .name("Hamza1")
-                        .email("hamza1@example.com")
-                        .password("secret1")
-                        .role(UserRole.USER)
-                        .build()
-        );
-
-        Task savedTask1 = taskRepository.save(
-                Task.builder()
-                        .title("Learn Spring Boot")
-                        .description("Project Based Learning")
-                        .status(TaskStatus.IN_PROGRESS)
-                        .priority(TaskPriority.HIGH)
-                        .dueDate(LocalDate.now().plusDays(3))
-                        .user(savedUser1)
-                        .build()
-        );
+        User savedUser1 = createUser("Hamza1", "hamza1@example.com", "secret1");
+        Task savedTask1 = createTask(savedUser1, "Learn Spring Boot", "Project Based Learning");
 
         TaskUpdateRequest request = new TaskUpdateRequest();
         request.setTitle("Master Spring Boot");
@@ -288,25 +187,8 @@ public class TaskControllerTest {
 
     @Test
     void shouldDeleteTaskSuccessfully() throws Exception{
-        User savedUser1 = userRepository.save(
-                User.builder()
-                        .name("Hamza1")
-                        .email("hamza1@example.com")
-                        .password("secret1")
-                        .role(UserRole.USER)
-                        .build()
-        );
-
-        Task savedTask1 = taskRepository.save(
-                Task.builder()
-                        .title("Learn Spring Boot")
-                        .description("Project Based Learning")
-                        .status(TaskStatus.IN_PROGRESS)
-                        .priority(TaskPriority.HIGH)
-                        .dueDate(LocalDate.now().plusDays(3))
-                        .user(savedUser1)
-                        .build()
-        );
+        User savedUser1 = createUser("Hamza1", "hamza1@example.com", "secret1");
+        Task savedTask1 = createTask(savedUser1, "Learn Spring Boot", "Project Based Learning");
 
         mockMvc.perform(delete("/api/tasks/"+savedTask1.getId()))
                 .andExpect(status().isOk());
@@ -341,25 +223,8 @@ public class TaskControllerTest {
 
     @Test
     void shouldReturnBadRequestWhenUpdatingTaskWithBlankTitle() throws Exception {
-        User savedUser1 = userRepository.save(
-                User.builder()
-                        .name("Hamza1")
-                        .email("hamza1@example.com")
-                        .password("secret1")
-                        .role(UserRole.USER)
-                        .build()
-        );
-
-        Task savedTask1 = taskRepository.save(
-                Task.builder()
-                        .title("Learn Spring Boot")
-                        .description("Project Based Learning")
-                        .status(TaskStatus.IN_PROGRESS)
-                        .priority(TaskPriority.HIGH)
-                        .dueDate(LocalDate.now().plusDays(3))
-                        .user(savedUser1)
-                        .build()
-        );
+        User savedUser1 = createUser("Hamza1", "hamza1@example.com", "secret1");
+        Task savedTask1 = createTask(savedUser1, "Learn Spring Boot", "Project Based Learning");
 
         TaskUpdateRequest request = new TaskUpdateRequest();
         request.setTitle(" ");
