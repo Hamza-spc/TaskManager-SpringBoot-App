@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -259,5 +260,32 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$.title").value("Master Spring Boot"))
                 .andExpect(jsonPath("$.description").value("Practicing MockMvc testing"))
                 .andExpect(jsonPath("$.userId").value(savedUser1.getId()));
+    }
+
+    @Test
+    void shouldDeleteTaskSuccessfully() throws Exception{
+        User savedUser1 = userRepository.save(
+                User.builder()
+                        .name("Hamza1")
+                        .email("hamza1@example.com")
+                        .password("secret1")
+                        .role(UserRole.USER)
+                        .build()
+        );
+
+        Task savedTask1 = taskRepository.save(
+                Task.builder()
+                        .title("Learn Spring Boot")
+                        .description("Project Based Learning")
+                        .status(TaskStatus.IN_PROGRESS)
+                        .priority(TaskPriority.HIGH)
+                        .dueDate(LocalDate.now().plusDays(3))
+                        .user(savedUser1)
+                        .build()
+        );
+
+        mockMvc.perform(delete("/api/tasks/"+savedTask1.getId()))
+                .andExpect(status().isOk());
+        assertFalse(taskRepository.findById(savedTask1.getId()).isPresent());
     }
 }
