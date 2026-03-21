@@ -47,6 +47,30 @@ public class TaskControllerTest {
         userRepository.deleteAll();
     }
 
+    private User createUser(String name, String email, String password) {
+        return userRepository.save(
+                User.builder()
+                        .name(name)
+                        .email(email)
+                        .password(password)
+                        .role(UserRole.USER)
+                        .build()
+        );
+    }
+
+    private Task createTask(User user, String title, String description) {
+        return taskRepository.save(
+                Task.builder()
+                        .title(title)
+                        .description(description)
+                        .status(TaskStatus.IN_PROGRESS)
+                        .priority(TaskPriority.HIGH)
+                        .dueDate(LocalDate.now().plusDays(3))
+                        .user(user)
+                        .build()
+        );
+    }
+
     @Test //happy-path test 200
     void shouldCreateTaskSuccessfully() throws Exception{
 
