@@ -306,4 +306,12 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Task not found with id 999"));
     }
+
+    @Test
+    void shouldReturnNotFoundWhenDeletingNonExistingTask() throws Exception {
+        mockMvc.perform(delete("/api/tasks/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Task not found with id 999"));
+    }
 }
