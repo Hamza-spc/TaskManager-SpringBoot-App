@@ -123,7 +123,7 @@ public class TaskControllerTest {
                         .build()
         );
 
-        Task savedTask = taskRepository.save(
+        taskRepository.save(
                 Task.builder()
                         .title("Learn Spring Boot")
                         .description("Project Based Learning")
@@ -140,8 +140,5 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$[0].title").value("Learn Spring Boot"))
                 .andExpect(jsonPath("$[0].description").value("Project Based Learning"))
                 .andExpect(jsonPath("$[0].userId").value(savedUser.getId()));
-
-
-
     }
 }
