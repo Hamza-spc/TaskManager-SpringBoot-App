@@ -314,4 +314,42 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Task not found with id 999"));
     }
+
+    @Test
+    void shouldReturnBadRequestWhenUpdatingTaskWithBlankTitle() throws Exception {
+        User savedUser1 = userRepository.save(
+                User.builder()
+                        .name("Hamza1")
+                        .email("hamza1@example.com")
+                        .password("secret1")
+                        .role(UserRole.USER)
+                        .build()
+        );
+
+        Task savedTask1 = taskRepository.save(
+                Task.builder()
+                        .title("Learn Spring Boot")
+                        .description("Project Based Learning")
+                        .status(TaskStatus.IN_PROGRESS)
+                        .priority(TaskPriority.HIGH)
+                        .dueDate(LocalDate.now().plusDays(3))
+                        .user(savedUser1)
+                        .build()
+        );
+
+        TaskUpdateRequest request = new TaskUpdateRequest();
+        request.setTitle(" ");
+        request.setDescription("Practicing MockMvc testing");
+        request.setStatus(TaskStatus.IN_PROGRESS);
+        request.setPriority(TaskPriority.HIGH);
+        request.setDueDate(LocalDate.now().plusDays(7));
+
+        mockMvc.perform(put("/api/tasks/" + savedTask1.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Validation failed"))
+                .andExpect(jsonPath("$.validationErrors.title").value("Title is required"));
+    }
 }
