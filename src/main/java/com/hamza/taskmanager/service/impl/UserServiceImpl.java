@@ -4,6 +4,7 @@ import com.hamza.taskmanager.dto.user.UserCreateRequest;
 import com.hamza.taskmanager.dto.user.UserResponse;
 import com.hamza.taskmanager.dto.user.UserUpdateRequest;
 import com.hamza.taskmanager.entity.User;
+import com.hamza.taskmanager.exception.EmailAlreadyExistsException;
 import com.hamza.taskmanager.exception.UserNotFoundException;
 import com.hamza.taskmanager.repository.UserRepository;
 import com.hamza.taskmanager.service.UserService;
@@ -22,6 +23,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createUser(UserCreateRequest request){
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyExistsException("Email already exists: " + request.getEmail());
+        }
         User user = userRepository.save(
                 User.builder()
                         .name(request.getName())
@@ -49,7 +53,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse updateUser(Long id, UserUpdateRequest request){
         User user = findUserById(id);
-
+        if (!user.getEmail().equals(request.getEmail()) && userRepository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyExistsException("Email already exists: " + request.getEmail());
+        }
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
