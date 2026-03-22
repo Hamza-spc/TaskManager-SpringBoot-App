@@ -83,7 +83,7 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
-                .andExpect(jsonPath("$.error").value("Email already exists: " + request.getEmail()));
+                .andExpect(jsonPath("$.message").value("Email already exists: " + request.getEmail()));
     }
 
     @Test
@@ -119,7 +119,7 @@ public class UserControllerTest {
         mockMvc.perform(get("/api/users/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.error").value("User not found with id 999"));
+                .andExpect(jsonPath("$.message").value("User not found with id 999"));
     }
 
     @Test
@@ -156,7 +156,7 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
-                .andExpect(jsonPath("$.error").value("Email already exists: omar@email.com"));
+                .andExpect(jsonPath("$.message").value("Email already exists: omar@email.com"));
     }
 
     @Test
@@ -174,6 +174,6 @@ public class UserControllerTest {
         mockMvc.perform(delete("/api/users/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.error").value("User not found with id 999"));
+                .andExpect(jsonPath("$.message").value("User not found with id 999"));
     }
 }

@@ -110,8 +110,8 @@ public class TaskControllerTest {
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Validation failed"))
-                .andExpect(jsonPath("$.validationErrors.title").value("Title is required"));
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.errors.title").value("Title is required"));
     }
 
     @Test //not-found failure test 404
@@ -119,7 +119,7 @@ public class TaskControllerTest {
         mockMvc.perform(get("/api/tasks/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.error").value("Task not found with id 999"));
+                .andExpect(jsonPath("$.message").value("Task not found with id 999"));
     }
 
     @Test
@@ -210,7 +210,7 @@ public class TaskControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.error").value("Task not found with id 999"));
+                .andExpect(jsonPath("$.message").value("Task not found with id 999"));
     }
 
     @Test
@@ -218,7 +218,7 @@ public class TaskControllerTest {
         mockMvc.perform(delete("/api/tasks/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.error").value("Task not found with id 999"));
+                .andExpect(jsonPath("$.message").value("Task not found with id 999"));
     }
 
     @Test
@@ -238,7 +238,7 @@ public class TaskControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Validation failed"))
-                .andExpect(jsonPath("$.validationErrors.title").value("Title is required"));
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.errors.title").value("Title is required"));
     }
 }
