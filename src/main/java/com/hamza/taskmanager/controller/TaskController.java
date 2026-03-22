@@ -3,6 +3,7 @@ package com.hamza.taskmanager.controller;
 import com.hamza.taskmanager.dto.task.TaskCreateRequest;
 import com.hamza.taskmanager.dto.task.TaskResponse;
 import com.hamza.taskmanager.dto.task.TaskUpdateRequest;
+import com.hamza.taskmanager.enums.TaskStatus;
 import com.hamza.taskmanager.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -27,8 +28,8 @@ public class TaskController {
     }
 
     @GetMapping
-    public Page<TaskResponse> getAllTasks(Pageable pageable) {
-        return taskService.getAllTasks(pageable);
+    public Page<TaskResponse> getAllTasks(@RequestParam(required = false) TaskStatus status, Pageable pageable) {
+        return taskService.getAllTasks(status, pageable);
     }
 
     @GetMapping("/{id}")

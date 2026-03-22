@@ -48,7 +48,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Page<TaskResponse> getAllTasks(Pageable pageable) {
+    public Page<TaskResponse> getAllTasks(TaskStatus status, Pageable pageable) {
+        if (status != null) {
+            return taskRepository.findByStatus(status, pageable)
+                    .map(this::mapToResponse);
+        }
+
         return taskRepository.findAll(pageable)
                 .map(this::mapToResponse);
     }
