@@ -87,9 +87,11 @@ public class TaskControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Learn Spring Boot"))
-                .andExpect(jsonPath("$.description").value("Finish Crud and understand architecture"))
-                .andExpect(jsonPath("$.userId").value(savedUser.getId()));
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("Task created successfully"))
+                .andExpect(jsonPath("$.data.title").value("Learn Spring Boot"))
+                .andExpect(jsonPath("$.data.description").value("Finish Crud and understand architecture"))
+                .andExpect(jsonPath("$.data.userId").value(savedUser.getId()));
 
     }
 
@@ -129,10 +131,12 @@ public class TaskControllerTest {
 
         mockMvc.perform(get("/api/tasks"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].title").value("Learn Spring Boot"))
-                .andExpect(jsonPath("$[0].description").value("Project Based Learning"))
-                .andExpect(jsonPath("$[0].userId").value(savedUser.getId()));
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("Tasks fetched successfully"))
+                .andExpect(jsonPath("$.data.content.size()").value(1))
+                .andExpect(jsonPath("$.data.content[0].title").value("Learn Spring Boot"))
+                .andExpect(jsonPath("$.data.content[0].description").value("Project Based Learning"))
+                .andExpect(jsonPath("$.data.content[0].userId").value(savedUser.getId()));
     }
 
     @Test
@@ -142,10 +146,12 @@ public class TaskControllerTest {
 
         mockMvc.perform(get("/api/tasks/"+savedTask.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(savedTask.getId()))
-                .andExpect(jsonPath("$.title").value("Learn Spring Boot"))
-                .andExpect(jsonPath("$.description").value("Project Based Learning"))
-                .andExpect(jsonPath("$.userId").value(savedUser.getId()));
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("Task fetched successfully"))
+                .andExpect(jsonPath("$.data.id").value(savedTask.getId()))
+                .andExpect(jsonPath("$.data.title").value("Learn Spring Boot"))
+                .andExpect(jsonPath("$.data.description").value("Project Based Learning"))
+                .andExpect(jsonPath("$.data.userId").value(savedUser.getId()));
 
     }
 
@@ -158,10 +164,12 @@ public class TaskControllerTest {
 
         mockMvc.perform(get("/api/tasks/user/" + savedUser1.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].title").value("Learn Spring Boot 1"))
-                .andExpect(jsonPath("$[0].description").value("Project Based Learning 1"))
-                .andExpect(jsonPath("$[0].userId").value(savedUser1.getId()));
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("User tasks fetched successfully"))
+                .andExpect(jsonPath("$.data.size()").value(1))
+                .andExpect(jsonPath("$.data[0].title").value("Learn Spring Boot 1"))
+                .andExpect(jsonPath("$.data[0].description").value("Project Based Learning 1"))
+                .andExpect(jsonPath("$.data[0].userId").value(savedUser1.getId()));
     }
 
     @Test
@@ -180,9 +188,11 @@ public class TaskControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Master Spring Boot"))
-                .andExpect(jsonPath("$.description").value("Practicing MockMvc testing"))
-                .andExpect(jsonPath("$.userId").value(savedUser1.getId()));
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("Task updated successfully"))
+                .andExpect(jsonPath("$.data.title").value("Master Spring Boot"))
+                .andExpect(jsonPath("$.data.description").value("Practicing MockMvc testing"))
+                .andExpect(jsonPath("$.data.userId").value(savedUser1.getId()));
     }
 
     @Test
@@ -191,7 +201,9 @@ public class TaskControllerTest {
         Task savedTask1 = createTask(savedUser1, "Learn Spring Boot", "Project Based Learning");
 
         mockMvc.perform(delete("/api/tasks/"+savedTask1.getId()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("Task deleted successfully"));
         assertFalse(taskRepository.findById(savedTask1.getId()).isPresent());
     }
 

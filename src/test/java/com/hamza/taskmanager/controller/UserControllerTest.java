@@ -65,9 +65,11 @@ public class UserControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Hamza"))
-                .andExpect(jsonPath("$.email").value("hamza@email.com"))
-                .andExpect(jsonPath("$.password").doesNotExist());
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("User created successfully"))
+                .andExpect(jsonPath("$.data.name").value("Hamza"))
+                .andExpect(jsonPath("$.data.email").value("hamza@email.com"))
+                .andExpect(jsonPath("$.data.password").doesNotExist());
     }
 
     @Test
@@ -93,13 +95,15 @@ public class UserControllerTest {
 
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$[0].name").value("Hamza1"))
-                .andExpect(jsonPath("$[0].email").value("hamza1@email.com"))
-                .andExpect(jsonPath("$[0].password").doesNotExist())
-                .andExpect(jsonPath("$[1].name").value("Hamza2"))
-                .andExpect(jsonPath("$[1].email").value("hamza2@email.com"))
-                .andExpect(jsonPath("$[1].password").doesNotExist());
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("Users fetched successfully"))
+                .andExpect(jsonPath("$.data.size()").value(2))
+                .andExpect(jsonPath("$.data[0].name").value("Hamza1"))
+                .andExpect(jsonPath("$.data[0].email").value("hamza1@email.com"))
+                .andExpect(jsonPath("$.data[0].password").doesNotExist())
+                .andExpect(jsonPath("$.data[1].name").value("Hamza2"))
+                .andExpect(jsonPath("$.data[1].email").value("hamza2@email.com"))
+                .andExpect(jsonPath("$.data[1].password").doesNotExist());
     }
 
     @Test
@@ -108,10 +112,12 @@ public class UserControllerTest {
 
         mockMvc.perform(get("/api/users/" + savedUser.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(savedUser.getId()))
-                .andExpect(jsonPath("$.name").value("Hamza"))
-                .andExpect(jsonPath("$.email").value("hamza@email.com"))
-                .andExpect(jsonPath("$.password").doesNotExist());
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("User fetched successfully"))
+                .andExpect(jsonPath("$.data.id").value(savedUser.getId()))
+                .andExpect(jsonPath("$.data.name").value("Hamza"))
+                .andExpect(jsonPath("$.data.email").value("hamza@email.com"))
+                .andExpect(jsonPath("$.data.password").doesNotExist());
     }
 
     @Test
@@ -135,10 +141,12 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(savedUser.getId()))
-                .andExpect(jsonPath("$.name").value("Hamza Updated"))
-                .andExpect(jsonPath("$.email").value("hamza.updated@email.com"))
-                .andExpect(jsonPath("$.password").doesNotExist());
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("User updated successfully"))
+                .andExpect(jsonPath("$.data.id").value(savedUser.getId()))
+                .andExpect(jsonPath("$.data.name").value("Hamza Updated"))
+                .andExpect(jsonPath("$.data.email").value("hamza.updated@email.com"))
+                .andExpect(jsonPath("$.data.password").doesNotExist());
     }
 
     @Test
@@ -164,7 +172,9 @@ public class UserControllerTest {
         User savedUser = createUser("Hamza", "hamza@email.com", "password");
 
         mockMvc.perform(delete("/api/users/" + savedUser.getId()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("User deleted successfully"));
 
         assertFalse(userRepository.findById(savedUser.getId()).isPresent());
     }
