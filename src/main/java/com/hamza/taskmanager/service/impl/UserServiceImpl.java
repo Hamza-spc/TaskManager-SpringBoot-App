@@ -42,15 +42,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getUserById(Long id){
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id " + id ));
+        User user = findUserById(id);
         return mapToResponse(user);
     }
 
     @Override
     public UserResponse updateUser(Long id, UserUpdateRequest request){
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id " + id));
+        User user = findUserById(id);
 
         user.setName(request.getName());
         user.setEmail(request.getEmail());
@@ -62,9 +60,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id){
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id " + id));
+        User user = findUserById(id);
         userRepository.delete(user);
+    }
+
+    private User findUserById(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id " + id));
     }
 
     private UserResponse mapToResponse(User user){
