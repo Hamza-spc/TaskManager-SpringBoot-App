@@ -8,6 +8,7 @@ import com.hamza.taskmanager.exception.EmailAlreadyExistsException;
 import com.hamza.taskmanager.exception.UserNotFoundException;
 import com.hamza.taskmanager.repository.UserRepository;
 import com.hamza.taskmanager.service.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +17,11 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository){
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -30,7 +33,7 @@ public class UserServiceImpl implements UserService {
                 User.builder()
                         .name(request.getName())
                         .email(request.getEmail())
-                        .password(request.getPassword())
+                        .password(passwordEncoder.encode(request.getPassword()))
                         .build()
         );
         return mapToResponse(user);
@@ -58,7 +61,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         User updatedUser = userRepository.save(user);
         return mapToResponse(updatedUser);
