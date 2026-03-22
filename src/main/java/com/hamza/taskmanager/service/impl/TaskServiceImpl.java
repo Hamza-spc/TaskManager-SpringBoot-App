@@ -12,6 +12,8 @@ import com.hamza.taskmanager.exception.UserNotFoundException;
 import com.hamza.taskmanager.repository.TaskRepository;
 import com.hamza.taskmanager.repository.UserRepository;
 import com.hamza.taskmanager.service.TaskService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,11 +48,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> getAllTasks() {
-        return taskRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
+    public Page<TaskResponse> getAllTasks(Pageable pageable) {
+        return taskRepository.findAll(pageable)
+                .map(this::mapToResponse);
     }
 
     @Override

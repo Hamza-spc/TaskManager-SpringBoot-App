@@ -5,6 +5,8 @@ import com.hamza.taskmanager.dto.task.TaskResponse;
 import com.hamza.taskmanager.dto.task.TaskUpdateRequest;
 import com.hamza.taskmanager.service.TaskService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,8 +27,8 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskResponse> getAllTasks() {
-        return taskService.getAllTasks();
+    public Page<TaskResponse> getAllTasks(Pageable pageable) {
+        return taskService.getAllTasks(pageable);
     }
 
     @GetMapping("/{id}")
