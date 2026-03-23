@@ -14,6 +14,14 @@ Verify signature using secret key
 ↓
 If valid → user authenticated
 
+🧠 So JwtService answers 3 questions:
+1. “How do I create a token?”
+   generateToken()
+2. “Who is inside this token?”
+   extractUsername()
+3. “Is this token still valid?”
+   isTokenValid()
+
 How does extractUsername(String token) work?
    In your JwtService, you have:
    public String extractUsername(String token) {
